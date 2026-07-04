@@ -1,5 +1,5 @@
-const PRODUCTS = window.GALAXY_PRODUCTS || [];
-const STATS = window.GALAXY_STATS || { countsByTab: {}, tabs: {} };
+let PRODUCTS = window.GALAXY_PRODUCTS || [];
+let STATS = window.GALAXY_STATS || { countsByTab: {}, tabs: {} };
 const PRODUCT_TABS = ['vapes', 'mods', 'glass', 'vaporizers', 'smoking'];
 const PAGE_IDS = {
   home: 'homePage',
@@ -381,6 +381,22 @@ const state = {
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
 
+
+async function loadProductsFromApi() {
+  try {
+    const response = await fetch('/api/public/products');
+    if (!response.ok) return;
+    const data = await response.json();
+    if (Array.isArray(data.products) && data.products.length) {
+      PRODUCTS = data.products;
+      const countsByTab = PRODUCTS.reduce((acc, p) => { acc[p.tab] = (acc[p.tab] || 0) + 1; return acc; }, {});
+      STATS = { ...STATS, countsByTab };
+    }
+  } catch (error) {
+    console.info('Using local products.js fallback. API products were not available.', error);
+  }
+}
+
 function money(value) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(value || 0));
 }
@@ -660,7 +676,8 @@ function initControls() {
 }
 
 window.addEventListener('hashchange', route);
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
+  await loadProductsFromApi();
   initAgeGate();
   initCounts();
   initHeroBanners();

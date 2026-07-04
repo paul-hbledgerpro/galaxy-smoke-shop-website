@@ -1,0 +1,13 @@
+WorkDrive image importing notes
+=============================
+The admin portal includes an importer endpoint at:
+  POST /api/admin/images/import-workdrive
+
+It can scan public HTML for image files and attach direct image URLs to matching products. Some Zoho WorkDrive public-folder pages are JavaScript-rendered and may not expose file URLs in raw HTML. If the scan returns 0 candidates, use one of these options:
+
+1. In Zoho WorkDrive, download a product folder as ZIP and upload through the admin portal.
+2. Generate direct download links for the Device + Small Box images.
+3. Use Cloudflare R2 upload in the admin portal and attach images by product ID.
+
+Recommended folder/path naming:
+  Brand / Product / Package or Packages / Device + Small Box / Flavor image.png

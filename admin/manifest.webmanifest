@@ -1,0 +1,10 @@
+{
+  "name": "Galaxy Smoke Shop Admin",
+  "short_name": "Galaxy Admin",
+  "start_url": "/admin/",
+  "scope": "/admin/",
+  "display": "standalone",
+  "background_color": "#faf5ea",
+  "theme_color": "#bd8a2d",
+  "icons": [{"src":"../assets/galaxy-logo.png","sizes":"512x512","type":"image/png","purpose":"any"}]
+}
