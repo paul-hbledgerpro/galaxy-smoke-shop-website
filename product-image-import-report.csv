@@ -1,0 +1,40 @@
+source_key,status,matched_product_name_fragment,website_image_url
+Watermelon-Ice,EXISTS,GEEKBAR PULSE WATERMELON ICE 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-watermelon-ice.png
+Strawberry-Banana,EXISTS,GEEKBAR PULSE STRAWBERRY BANANA 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-strawberry-banana.png
+Pink-Lemonade,EXISTS,GEEKBAR PULSE PINK LEMONADE 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-pink-lemonade.png
+Miami-Mint,EXISTS,GEEKBAR PULSE MIAMI MINT 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-miami-mint.png
+Juicy-Peach-Ice,EXISTS,GEEKBAR PULSE JUICY PEACH ICE 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-juicy-peach-ice.png
+Strawberry-Mango,EXISTS,GEEKBAR PULSE STRAWBERRY MANGO 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-strawberry-mango.png
+Sour-Apple-Ice,EXISTS,GEEKBAR PULSE SOUR APPLE ICE 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-sour-apple-ice.png
+fcukin-FAB,EXISTS,GEEKBAR PULSE FUCKING FAB 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-fcukin-fab.png
+California-Cherry,EXISTS,GEEKBAR PULSE CALIFORNIA CHERRY 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-california-cherry.png
+White-Gummy--Ice,EXISTS,GEEKBAR PULSE WHITE GUMMY ICE 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-white-gummy-ice.png
+Mexico-Mango,EXISTS,GEEKBAR PULSE MEXICO MANGO 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-mexico-mango.png
+Tropical-Rainbow-Blast,EXISTS,GEEKBAR PULSE TROPICAL RAINBOW BLAST 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-tropical-rainbow-blast.png
+Meta-Moon,PROCESSED_SIMPLE,GEEKBAR PULSE META MOON 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-meta-moon.png
+Strawberry Kiwi,EXISTS,GEEKBAR PULSE STRAWBERRY KIWI 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-strawberry-kiwi.png
+Punch,EXISTS,GEEKBAR PULSE PUNCH 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-punch.png
+Peach Lemonade,EXISTS,GEEKBAR PULSE PEACH LEMONADE 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-peach-lemonade.png
+Banana Ice,EXISTS,GEEKBAR PULSE BANANA ICE 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-banana-ice.png
+Raspberry Watermelon,EXISTS,GEEKBAR PULSE RASPBERRY WATERMELON 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-raspberry-watermelon.png
+Sour Watermelon Drop,EXISTS,GEEKBAR PULSE SOUR WATERMELON DROP 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-sour-watermelon-drop.png
+Sour Strawberry,EXISTS,GEEKBAR PULSE SOUR STRAWBERRY 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-sour-strawberry.png
+Sour Blue Dust,EXISTS,GEEKBAR PULSE SOUR BLUE DUST 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-sour-blue-dust.png
+Sour Gush,EXISTS,GEEKBAR PULSE SOUR GUSH 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-sour-gush.png
+Sour Cranapple,EXISTS,GEEKBAR PULSE SOUR CRANAPPLE 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-sour-cranapple.png
+Orange Mint Savers,EXISTS,GEEKBAR PULSE ORANGE MINT SAVERS 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-orange-mint-savers.png
+Wild Berry Savers,EXISTS,GEEKBAR PULSE WILD BERRY SAVERS 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-wild-berry-savers.png
+Pineapple Savers,EXISTS,GEEKBAR PULSE PINAPPLE SAVERS 15000; GEEKBAR PULSE PINEAPPLE SAVERS 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-pineapple-savers.png
+Drop Sour Savers,EXISTS,GEEKBAR PULSE DROP SOUR SAVERS 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-drop-sour-savers.png
+Strawberry Savers,EXISTS,GEEKBAR PULSE STRAWBERRY SAVERS 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-strawberry-savers.png
+StoneMintz,PROCESSED_SIMPLE,GEEKBAR PULSE STONEMINTZ 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-stonemintz.png
+IceyMintz,PROCESSED_SIMPLE,GEEKBAR PULSE ICEYMINTZ 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-iceymintz.png
+BlackMintz,PROCESSED_SIMPLE,GEEKBAR PULSE BLACKMINTZ 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-blackmintz.png
+CreamyMintz,PROCESSED_SIMPLE,GEEKBAR PULSE CREAMYMINTZ 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-creamymintz.png
+PepperMintz,PROCESSED_SIMPLE,GEEKBAR PULSE PEPPERMINTZ 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-peppermintz.png
+Frozen-White-Grape,PROCESSED_SIMPLE,GEEKBAR PULSE FROZEN WHITE GRAPE15000; GEEKBAR PULSE FROZEN WHITE GRAPE 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-frozen-white-grape.png
+Frozen-Cherry-Apple,PROCESSED_SIMPLE,GEEKBAR PULSE FROZEN CHERRY APPLE 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-frozen-cherry-apple.png
+Frozen-Strawberry,PROCESSED_SIMPLE,GEEKBAR PULSE FROZEN STRAWBERRY 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-frozen-strawberry.png
+Frozen-Blackberry-Fab,PROCESSED_SIMPLE,GEEKBAR PULSE FROZEN BLACKBERRY FAB 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-frozen-blackberry-fab.png
+Frozen-Pina-Colada,PROCESSED_SIMPLE,GEEKBAR PULSE FROZEN PINA COLADA 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-frozen-pina-colada.png
+Frozen-Watermelon,PROCESSED_SIMPLE,GEEKBAR PULSE FROZEN WATERMELON 15000,assets/product-images/imported-geekbar-pulse/imported_geekbar-pulse-frozen-watermelon.png
