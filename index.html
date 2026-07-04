@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Galaxy Smoke Shop | Product Preview</title>
+  <meta name="description" content="Galaxy Smoke Shop preview website: vapes, mods, glass, vaporizers, smoking accessories, locations, careers, about and contact." />
+  <link rel="icon" href="assets/galaxy-logo.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-theme="champagne-lux">
+  <div class="age-gate" id="ageGate" role="dialog" aria-modal="true" aria-labelledby="ageGateTitle">
+    <div class="age-card">
+      <img src="assets/galaxy-logo.png" alt="Galaxy Smoke Shop logo" />
+      <p class="eyebrow">Adults Only</p>
+      <h1 id="ageGateTitle">Are you 21 or older?</h1>
+      <p>This preview contains tobacco, nicotine, and smoke-shop product information. Please enter only if you are of legal age in your location.</p>
+      <div class="age-actions">
+        <button class="btn primary" id="confirmAge">Yes, I am 21+</button>
+        <a class="btn ghost" href="https://www.google.com/">No, exit</a>
+      </div>
+      <small>No online sales are enabled on this preview website.</small>
+    </div>
+  </div>
+
+  <header class="site-header customer-header" id="top">
+    <div class="top-announcement">
+      <span>Adults 21+ only</span>
+      <span>View-only catalog — no online checkout</span>
+      <a href="https://www.instagram.com/galaxyelgin20/" target="_blank" rel="noopener">Instagram @galaxyelgin20</a>
+    </div>
+    <div class="header-main-row">
+      <a class="brand" href="#home" aria-label="Galaxy Smoke Shop Home">
+        <img src="assets/galaxy-logo.png" alt="Galaxy Smoke Shop logo" />
+      </a>
+      <div class="header-quick-links" aria-label="Quick links">
+        <a href="#locations">Locations</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-controls="mainNav" aria-expanded="false">Menu</button>
+    </div>
+    <nav class="main-nav" id="mainNav" aria-label="Primary navigation">
+      <a href="#home" data-nav="home">Home</a>
+      <a href="#vapes" data-nav="vapes">Vape's</a>
+      <a href="#mods" data-nav="mods">Mods & Accessories</a>
+      <a href="#glass" data-nav="glass">Glass</a>
+      <a href="#vaporizers" data-nav="vaporizers">Vaporizers</a>
+      <a href="#smoking" data-nav="smoking">Smoking Accessories</a>
+      <a href="#careers" data-nav="careers">Careers</a>
+      <a href="#locations" data-nav="locations">Locations</a>
+      <a href="#about" data-nav="about">About Us</a>
+      <a href="#contact" data-nav="contact">Contact Us</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page active" id="homePage" data-page="home">
+      <section class="hero hero-reference section-shell">
+        <div class="reference-banner-frame" aria-label="Featured brand banners inspired by carousel layout">
+          <div class="reference-banner-slider" id="heroBanners">
+            <article class="hero-banner-slide banner-image-slide active"><img src="assets/banners/geekbar-pulse-banner.png" alt="Geek Bar Pulse banner" loading="eager" /></article>
+            <article class="hero-banner-slide banner-image-slide"><img src="assets/banners/geekbar-pulsex-banner.png" alt="Geek Bar Pulse X banner" loading="lazy" /></article>
+            <article class="hero-banner-slide banner-image-slide"><img src="assets/banners/foger-banner.png" alt="Foger banner" loading="lazy" /></article>
+            <article class="hero-banner-slide banner-image-slide"><img src="assets/banners/raz-banner.png" alt="Geekvape RAZ banner" loading="lazy" /></article>
+            <article class="hero-banner-slide banner-image-slide"><img src="assets/banners/puffco-banner.png" alt="Puffco banner" loading="lazy" /></article>
+          </div>
+          <div class="hero-banner-dots" id="heroBannerDots" aria-label="Banner slide indicators"></div>
+        </div>
+</section>
+
+      <section class="section-shell best-sellers-section" aria-label="Best seller products">
+        <div class="section-heading-row">
+          <div>
+            <p class="eyebrow">Best Sellers</p>
+            <h2>Featured customer favorites.</h2>
+            <p>Browse popular items by brand. Select a brand tab to view highlighted products from the inventory.</p>
+          </div>
+        </div>
+        <div class="best-seller-tabs" id="bestSellerTabs" role="tablist" aria-label="Best seller brand tabs"></div>
+        <div class="best-seller-track" id="bestSellerTrack" aria-live="polite"></div>
+      </section>
+
+      <section class="section-shell instagram-section" aria-label="Instagram feed">
+        <div class="section-heading-row instagram-heading">
+          <div>
+            <p class="eyebrow">Follow Us</p>
+            <h2>Latest from Instagram.</h2>
+            <p>See rotating highlights from all Galaxy Smoke Shop location Instagram accounts.</p>
+          </div>
+        </div>
+        <div class="instagram-accounts-row" aria-label="Instagram accounts">
+          <span>@galaxyelgin20</span>
+          <span>@elginsmoke1350</span>
+          <span>@galaxysmoke2000</span>
+          <span>@galaxycville</span>
+          <span>@galaxysmokeshop805</span>
+          <span>@milkywavesmokeshop</span>
+        </div>
+        <div class="instagram-grid instagram-gallery-grid" id="instagramRotatingGrid" aria-live="polite"></div>
+      </section>
+    </section>
+
+    <section class="page product-page" id="productPage" data-page="products">
+      <section class="section-shell product-hero">
+        <p class="eyebrow" id="productEyebrow">Catalog</p>
+        <h1 id="productTitle">Products</h1>
+        <p id="productDek">Browse products.</p>
+      </section>
+
+      <section class="section-shell product-controls" aria-label="Product controls">
+        <label class="search-field">
+          <span>Search products</span>
+          <input id="productSearch" type="search" placeholder="Search by item, category, UPC..." />
+        </label>
+        <label>
+          <span>Category</span>
+          <select id="categoryFilter"></select>
+        </label>
+        <label>
+          <span>Sort</span>
+          <select id="sortFilter">
+            <option value="featured">Featured</option>
+            <option value="name-asc">Name A-Z</option>
+            <option value="price-asc">Price low-high</option>
+            <option value="price-desc">Price high-low</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="section-shell catalog-summary">
+        <p id="resultSummary">Showing products.</p>
+        <p class="muted">Product images use transparent cutouts on the Galaxy White Marble Gold product panel. Availability is handled through the inquiry button for each item.</p>
+      </section>
+
+      <section class="section-shell product-grid" id="productGrid" aria-live="polite"></section>
+      <section class="section-shell pager" id="pager"></section>
+    </section>
+
+    <section class="page" id="careersPage" data-page="careers">
+      <section class="section-shell content-page">
+        <p class="eyebrow">Careers</p>
+        <h1>Join the Galaxy Smoke Shop team.</h1>
+        <p>Use this page for open roles, hiring requirements, and application instructions.</p>
+        <div class="content-cards two-col">
+          <article>
+            <h3>Retail Associate</h3>
+            <p>Customer service, product knowledge, restocking, register support, and store upkeep.</p>
+          </article>
+          <article>
+            <h3>Keyholder / Shift Lead</h3>
+            <p>Opening and closing support, team coordination, inventory awareness, and customer experience.</p>
+          </article>
+        </div>
+        <a href="#contact" class="btn primary">Contact About Careers</a>
+      </section>
+    </section>
+
+    <section class="page" id="locationsPage" data-page="locations">
+      <section class="section-shell content-page locations-page">
+        <p class="eyebrow">Locations</p>
+        <h1>Visit our smoke shop locations.</h1>
+        <p class="locations-intro">Choose the store closest to you. Each location includes the address, phone number, embedded map, and a directions button that opens Google Maps.</p>
+        <div class="locations-grid">
+          <article class="location-card">
+            <div class="location-details">
+              <span class="location-number">01</span>
+              <h2>Galaxy Smoke Shop Elgin</h2>
+              <p class="location-address">20 S State St., Elgin, IL 60123</p>
+              <p><strong>Phone:</strong> <a href="tel:+12247697934">(224) 769-7934</a></p>
+              <div class="location-actions">
+                <a class="btn primary small" href="https://www.google.com/maps/dir/?api=1&destination=20+S+State+St.%2C+Elgin%2C+IL+60123" target="_blank" rel="noopener">Get Directions</a>
+                <a class="btn secondary small" href="tel:+12247697934">Call Store</a>
+              </div>
+            </div>
+            <div class="map-embed" aria-label="Map for Galaxy Smoke Shop Elgin">
+              <iframe
+                title="Map to Galaxy Smoke Shop Elgin"
+                src="https://maps.google.com/maps?q=20+S+State+St.%2C+Elgin%2C+IL+60123&output=embed"
+                loading="lazy"
+                allowfullscreen=""
+                referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+          </article>
+          <article class="location-card">
+            <div class="location-details">
+              <span class="location-number">02</span>
+              <h2>Galaxy Smoke Shop Hanover</h2>
+              <p class="location-address">2000 Irving Park Rd, Hanover Park, IL 60133</p>
+              <p><strong>Phone:</strong> <a href="tel:+16308554075">(630) 855-4075</a></p>
+              <div class="location-actions">
+                <a class="btn primary small" href="https://www.google.com/maps/dir/?api=1&destination=2000+Irving+Park+Rd%2C+Hanover+Park%2C+IL+60133" target="_blank" rel="noopener">Get Directions</a>
+                <a class="btn secondary small" href="tel:+16308554075">Call Store</a>
+              </div>
+            </div>
+            <div class="map-embed" aria-label="Map for Galaxy Smoke Shop Hanover">
+              <iframe
+                title="Map to Galaxy Smoke Shop Hanover"
+                src="https://maps.google.com/maps?q=2000+Irving+Park+Rd%2C+Hanover+Park%2C+IL+60133&output=embed"
+                loading="lazy"
+                allowfullscreen=""
+                referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+          </article>
+          <article class="location-card">
+            <div class="location-details">
+              <span class="location-number">03</span>
+              <h2>Elgin Smoke and Tobacco Shop</h2>
+              <p class="location-address">1350 E Chicago St. Unit 25, Elgin, IL 60120</p>
+              <p><strong>Phone:</strong> <a href="tel:+12248565628">(224) 856-5628</a></p>
+              <div class="location-actions">
+                <a class="btn primary small" href="https://www.google.com/maps/dir/?api=1&destination=1350+E+Chicago+St.+Unit+25%2C+Elgin%2C+IL+60120" target="_blank" rel="noopener">Get Directions</a>
+                <a class="btn secondary small" href="tel:+12248565628">Call Store</a>
+              </div>
+            </div>
+            <div class="map-embed" aria-label="Map for Elgin Smoke and Tobacco Shop">
+              <iframe
+                title="Map to Elgin Smoke and Tobacco Shop"
+                src="https://maps.google.com/maps?q=1350+E+Chicago+St.+Unit+25%2C+Elgin%2C+IL+60120&output=embed"
+                loading="lazy"
+                allowfullscreen=""
+                referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+          </article>
+          <article class="location-card">
+            <div class="location-details">
+              <span class="location-number">04</span>
+              <h2>Galaxy Smoke Shop Schaumburg</h2>
+              <p class="location-address">805 E Schaumburg Rd, Schaumburg, IL 60194</p>
+              <p><strong>Phone:</strong> <a href="tel:+18474665844">(847) 466-5844</a></p>
+              <div class="location-actions">
+                <a class="btn primary small" href="https://www.google.com/maps/dir/?api=1&destination=805+E+Schaumburg+Rd%2C+Schaumburg%2C+IL+60194" target="_blank" rel="noopener">Get Directions</a>
+                <a class="btn secondary small" href="tel:+18474665844">Call Store</a>
+              </div>
+            </div>
+            <div class="map-embed" aria-label="Map for Galaxy Smoke Shop Schaumburg">
+              <iframe
+                title="Map to Galaxy Smoke Shop Schaumburg"
+                src="https://maps.google.com/maps?q=805+E+Schaumburg+Rd%2C+Schaumburg%2C+IL+60194&output=embed"
+                loading="lazy"
+                allowfullscreen=""
+                referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+          </article>
+          <article class="location-card">
+            <div class="location-details">
+              <span class="location-number">05</span>
+              <h2>Galaxy Smoke Shop Carpentersville</h2>
+              <p class="location-address">91 S Kennedy Dr., Unit I, Carpentersville, IL 60110</p>
+              <p><strong>Phone:</strong> <a href="tel:+12248028111">(224) 802-8111</a></p>
+              <div class="location-actions">
+                <a class="btn primary small" href="https://www.google.com/maps/dir/?api=1&destination=91+S+Kennedy+Dr+Unit+I%2C+Carpentersville%2C+IL+60110" target="_blank" rel="noopener">Get Directions</a>
+                <a class="btn secondary small" href="tel:+12248028111">Call Store</a>
+              </div>
+            </div>
+            <div class="map-embed" aria-label="Map for Galaxy Smoke Shop Carpentersville">
+              <iframe
+                title="Map to Galaxy Smoke Shop Carpentersville"
+                src="https://maps.google.com/maps?q=91+S+Kennedy+Dr+Unit+I%2C+Carpentersville%2C+IL+60110&output=embed"
+                loading="lazy"
+                allowfullscreen=""
+                referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+          </article>
+          <article class="location-card">
+            <div class="location-details">
+              <span class="location-number">06</span>
+              <h2>Milkywave Smoke and Vape</h2>
+              <p class="location-address">1105 Maple Ave, Lisle, IL 60532</p>
+              <p><strong>Phone:</strong> <a href="tel:+16307249790">(630) 724-9790</a></p>
+              <div class="location-actions">
+                <a class="btn primary small" href="https://www.google.com/maps/dir/?api=1&destination=1105+Maple+Ave%2C+Lisle%2C+IL+60532" target="_blank" rel="noopener">Get Directions</a>
+                <a class="btn secondary small" href="tel:+16307249790">Call Store</a>
+              </div>
+            </div>
+            <div class="map-embed" aria-label="Map for Milkywave Smoke and Vape">
+              <iframe
+                title="Map to Milkywave Smoke and Vape"
+                src="https://maps.google.com/maps?q=1105+Maple+Ave%2C+Lisle%2C+IL+60532&output=embed"
+                loading="lazy"
+                allowfullscreen=""
+                referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+          </article>
+        </div>
+      </section>
+    </section>
+
+    <section class="page" id="aboutPage" data-page="about">
+      <section class="section-shell content-page">
+        <p class="eyebrow">About Us</p>
+        <h1>Galaxy Smoke Shop is built around selection, service, and a clean in-store experience.</h1>
+        <p>Customize this section with your business story, brand promise, team values, and product specialties.</p>
+        <div class="content-cards three-col">
+          <article>
+            <h3>Wide Selection</h3>
+            <p>Browse vapes, mods, glass, vaporizers, rolling accessories, hookah items, and more.</p>
+          </article>
+          <article>
+            <h3>Helpful Service</h3>
+            <p>Designed for staff-assisted, in-store product discovery and quick price lookup.</p>
+          </article>
+          <article>
+            <h3>Display-Only</h3>
+            <p>The current website does not sell, ship, or process payments online.</p>
+          </article>
+        </div>
+      </section>
+    </section>
+
+    <section class="page" id="contactPage" data-page="contact">
+      <section class="section-shell content-page contact-layout">
+        <div>
+          <p class="eyebrow">Contact Us</p>
+          <h1>Contact Galaxy Smoke Shop.</h1>
+          <p>Add the final email, phone, address, and business hours here before publishing.</p>
+          <div class="contact-list">
+            <p><strong>Phone:</strong> Add phone number</p>
+            <p><strong>Email:</strong> Add business email</p>
+            <p><strong>Address:</strong> Add store address</p>
+          </div>
+        </div>
+        <form class="contact-form" id="contactForm">
+          <label>Name<input type="text" name="name" placeholder="Your name" /></label>
+          <label>Email<input type="email" name="email" placeholder="you@example.com" /></label>
+          <label>Message<textarea name="message" placeholder="How can we help?" rows="5"></textarea></label>
+          <button class="btn primary" type="submit">Preview Submit</button>
+          <p class="form-note" id="formNote">Connect this form to your email or website backend before launch.</p>
+        </form>
+      </section>
+    </section>
+  </main>
+
+  
+  <div class="availability-modal hidden" id="availabilityModal" aria-hidden="true">
+    <div class="availability-backdrop" id="availabilityBackdrop"></div>
+    <div class="availability-dialog" role="dialog" aria-modal="true" aria-labelledby="availabilityTitle">
+      <button class="modal-close" id="availabilityClose" aria-label="Close">×</button>
+      <p class="eyebrow">Availability Inquiry</p>
+      <h2 id="availabilityTitle">Check availability</h2>
+      <p class="availability-copy">Select the location you want to contact for this item.</p>
+      <div class="selected-product" id="selectedProductName"></div>
+      <label class="availability-label">
+        <span>Choose location</span>
+        <select id="availabilityLocationSelect">
+          <option value="">Select a location</option>
+          <option value="elgin">Galaxy Smoke Shop Elgin</option>
+          <option value="hanover">Galaxy Smoke Shop Hanover</option>
+          <option value="elgin-tobacco">Elgin Smoke and Tobacco Shop</option>
+          <option value="schaumburg">Galaxy Smoke Shop Schaumburg</option>
+          <option value="carpentersville">Galaxy Smoke Shop Carpentersville</option>
+          <option value="milkywave">Milkywave Smoke and Vape</option>
+        </select>
+      </label>
+      <div class="selected-location-card hidden" id="selectedLocationCard">
+        <h3 id="selectedLocationName"></h3>
+        <p id="selectedLocationAddress"></p>
+        <p><strong>Phone:</strong> <a id="selectedLocationPhone" href="#"></a></p>
+      </div>
+      <div class="availability-actions">
+        <a class="btn primary disabled-link" id="callSelectedLocation" href="#" aria-disabled="true">Call This Store</a>
+        <a class="btn secondary disabled-link" id="directionsSelectedLocation" href="#" aria-disabled="true" target="_blank" rel="noopener">Get Directions</a>
+      </div>
+      <p class="availability-note">This is a display-only website preview. Inquiry buttons connect customers to the selected store location.</p>
+    </div>
+  </div>
+
+  <footer class="site-footer customer-footer">
+    <div class="footer-grid footer-link-grid">
+      <section class="footer-brand-block">
+        <img src="assets/galaxy-logo.png" alt="Galaxy Smoke Shop logo" />
+        <p>Galaxy Smoke Shop is a display-only catalog for adults 21+. Browse products, view pricing, and contact your preferred store location for availability.</p>
+        <p class="footer-age">Adults 21+ only.</p>
+      </section>
+      <section class="footer-column">
+        <h3>Shop</h3>
+        <a href="index.html#vapes">Vape's</a>
+        <a href="index.html#mods">Mods & Accessories</a>
+        <a href="index.html#glass">Glass</a>
+        <a href="index.html#vaporizers">Vaporizers</a>
+        <a href="index.html#smoking">Smoking Accessories</a>
+      </section>
+      <section class="footer-column">
+        <h3>Information</h3>
+        <a href="about.html">About Us</a>
+        <a href="contact.html">Contact Us</a>
+        <a href="index.html#locations">Locations</a>
+        <a href="terms.html">Terms & Conditions</a>
+        <a href="return-policy.html">Return Policy</a>
+      </section>
+      <section class="footer-column">
+        <h3>Connect</h3>
+        <a href="https://www.instagram.com/galaxyelgin20/" target="_blank" rel="noopener">Instagram @galaxyelgin20</a>
+        <a href="contact.html">Send a Message</a>
+      </section>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Galaxy Smoke Shop. All rights reserved.</span>
+      <span>View-only website. No online checkout.</span>
+    </div>
+  </footer>
+
+  <script src="products.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
