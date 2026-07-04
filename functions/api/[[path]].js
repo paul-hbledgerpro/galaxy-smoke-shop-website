@@ -2,10 +2,13 @@ export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
   const path = url.pathname.replace(/^\/api\/?/, '');
+
   try {
     if (request.method === 'OPTIONS') return cors(new Response(null, { status: 204 }));
-    if (path === 'health') return json({ ok: true });
+    if (path === 'health') return json({ ok: true, message: 'Galaxy admin API is online' });
+    if (path === 'admin/setup-status') return setupStatus(env);
     if (path === 'public/products') return getPublicProducts(env, url);
+
     if (path === 'admin/signup' && request.method === 'POST') return signup(request, env);
     if (path === 'admin/login' && request.method === 'POST') return login(request, env);
 
@@ -31,28 +34,87 @@ function cors(res) {
   h.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   return new Response(res.body, { status: res.status, headers: h });
 }
-function json(data, status = 200) { return cors(new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } })); }
-function needDB(env) { if (!env.DB) throw Object.assign(new Error('D1 binding DB is not configured.'), { status: 500 }); return env.DB; }
-function publicAdmin(a){ return { id: a.id, email: a.email, role: a.role || 'admin' }; }
-function normalizeEmail(email){ return String(email || '').trim().toLowerCase(); }
-function sqlDate(ms){ return new Date(ms).toISOString().replace('T',' ').slice(0,19); }
-function base64Url(bytes){ let bin=''; for (const b of bytes) bin += String.fromCharCode(b); return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
-function randomToken(bytes=32){ const arr = new Uint8Array(bytes); crypto.getRandomValues(arr); return base64Url(arr); }
-async function passwordHash(password, salt){
+function json(data, status = 200) {
+  return cors(new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } }));
+}
+function needDB(env) {
+  if (!env.DB) throw Object.assign(new Error('D1 binding DB is not configured on this Pages project.'), { status: 500 });
+  return env.DB;
+}
+function publicAdmin(a) { return { id: a.id, email: a.email, role: a.role || 'admin' }; }
+function normalizeEmail(email) { return String(email || '').trim().toLowerCase(); }
+function sqlDate(ms) { return new Date(ms).toISOString().replace('T', ' ').slice(0, 19); }
+function base64Url(bytes) { let bin=''; for (const b of bytes) bin += String.fromCharCode(b); return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/,''); }
+function randomToken(bytes=32) { const arr = new Uint8Array(bytes); crypto.getRandomValues(arr); return base64Url(arr); }
+async function passwordHash(password, salt) {
   const enc = new TextEncoder();
-  const key = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
+  const key = await crypto.subtle.importKey('raw', enc.encode(String(password || '')), 'PBKDF2', false, ['deriveBits']);
   const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: enc.encode(salt), iterations: 120000, hash: 'SHA-256' }, key, 256);
   return base64Url(new Uint8Array(bits));
 }
-function safeEqual(a,b){ a=String(a||''); b=String(b||''); if(a.length!==b.length) return false; let out=0; for(let i=0;i<a.length;i++) out |= a.charCodeAt(i)^b.charCodeAt(i); return out===0; }
-async function createSession(db, adminId){
+function safeEqual(a, b) {
+  a = String(a || ''); b = String(b || '');
+  if (a.length !== b.length) return false;
+  let out = 0;
+  for (let i = 0; i < a.length; i++) out |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return out === 0;
+}
+
+async function ensureAuthSchema(env) {
+  const db = needDB(env);
+  await db.prepare(`CREATE TABLE IF NOT EXISTS admins (
+    id TEXT PRIMARY KEY,
+    email TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    password_salt TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'admin',
+    active INTEGER NOT NULL DEFAULT 1,
+    last_login TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+  )`).run();
+  await db.prepare('CREATE INDEX IF NOT EXISTS idx_admins_email ON admins(email)').run();
+
+  let sessionColumns = [];
+  try {
+    const info = await db.prepare('PRAGMA table_info(admin_sessions)').all();
+    sessionColumns = (info.results || []).map((r) => r.name);
+  } catch (_) {}
+  const goodSessionTable = ['token', 'admin_id', 'expires_at'].every((c) => sessionColumns.includes(c));
+  if (!goodSessionTable) {
+    await db.prepare('DROP TABLE IF EXISTS admin_sessions').run();
+    await db.prepare(`CREATE TABLE admin_sessions (
+      token TEXT PRIMARY KEY,
+      admin_id TEXT NOT NULL,
+      expires_at TEXT NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE
+    )`).run();
+  }
+  await db.prepare('CREATE INDEX IF NOT EXISTS idx_admin_sessions_admin_id ON admin_sessions(admin_id)').run();
+  await db.prepare('CREATE INDEX IF NOT EXISTS idx_admin_sessions_expires_at ON admin_sessions(expires_at)').run();
+  return db;
+}
+
+async function setupStatus(env) {
+  const db = await ensureAuthSchema(env);
+  let products = 0;
+  try {
+    const p = await db.prepare('SELECT COUNT(*) count FROM products').first();
+    products = Number(p?.count || 0);
+  } catch (_) {}
+  const admins = await db.prepare('SELECT COUNT(*) count FROM admins WHERE active=1').first();
+  return json({ ok: true, dbConfigured: true, adminCount: Number(admins?.count || 0), productCount: products });
+}
+
+async function createSession(db, adminId) {
   const token = randomToken(40);
   const expires = sqlDate(Date.now() + 1000 * 60 * 60 * 24 * 30);
   await db.prepare('INSERT INTO admin_sessions (token, admin_id, expires_at, created_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)').bind(token, adminId, expires).run();
   return token;
 }
 async function requireAdmin(request, env) {
-  const db = needDB(env);
+  const db = await ensureAuthSchema(env);
   const auth = request.headers.get('Authorization') || '';
   const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
   if (!token) throw Object.assign(new Error('Unauthorized'), { status: 401 });
@@ -63,8 +125,8 @@ async function requireAdmin(request, env) {
   return row;
 }
 async function signup(request, env) {
-  const db = needDB(env);
-  const body = await request.json();
+  const db = await ensureAuthSchema(env);
+  const body = await request.json().catch(() => ({}));
   const email = normalizeEmail(body.email);
   const password = String(body.password || '');
   const signupCode = String(body.signupCode || '');
@@ -73,39 +135,40 @@ async function signup(request, env) {
   const existing = await db.prepare('SELECT COUNT(*) count FROM admins WHERE active=1').first();
   const adminCount = Number(existing?.count || 0);
   if (adminCount > 0) {
-    if (!env.ADMIN_SIGNUP_CODE) throw Object.assign(new Error('Admin signup is closed. Ask the owner to set ADMIN_SIGNUP_CODE or create this admin.'), { status: 403 });
+    if (!env.ADMIN_SIGNUP_CODE) throw Object.assign(new Error('Admin signup is closed after the first account. Set ADMIN_SIGNUP_CODE in Cloudflare or use the first admin login.'), { status: 403 });
     if (!safeEqual(signupCode, env.ADMIN_SIGNUP_CODE)) throw Object.assign(new Error('Invalid signup code.'), { status: 403 });
   }
   const dupe = await db.prepare('SELECT id FROM admins WHERE email=?').bind(email).first();
-  if (dupe) throw Object.assign(new Error('An admin account with that email already exists.'), { status: 409 });
+  if (dupe) throw Object.assign(new Error('An admin account with that email already exists. Use Login instead.'), { status: 409 });
   const id = crypto.randomUUID();
   const salt = randomToken(18);
   const hash = await passwordHash(password, salt);
   const role = adminCount === 0 ? 'owner' : 'admin';
-  await db.prepare('INSERT INTO admins (id, email, password_hash, password_salt, role, active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)')
-    .bind(id, email, hash, salt, role).run();
+  await db.prepare(`INSERT INTO admins (id, email, password_hash, password_salt, role, active, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`).bind(id, email, hash, salt, role).run();
   const token = await createSession(db, id);
   return json({ ok: true, token, admin: { id, email, role } });
 }
 async function login(request, env) {
-  const db = needDB(env);
-  const { email, password } = await request.json();
-  const cleanEmail = normalizeEmail(email);
+  const db = await ensureAuthSchema(env);
+  const body = await request.json().catch(() => ({}));
+  const cleanEmail = normalizeEmail(body.email);
   const admin = await db.prepare('SELECT * FROM admins WHERE email=? AND active=1').bind(cleanEmail).first();
   if (!admin) throw Object.assign(new Error('Invalid email or password.'), { status: 401 });
-  const hash = await passwordHash(String(password || ''), admin.password_salt || '');
+  const hash = await passwordHash(String(body.password || ''), admin.password_salt || '');
   if (!safeEqual(hash, admin.password_hash)) throw Object.assign(new Error('Invalid email or password.'), { status: 401 });
   await db.prepare('UPDATE admins SET last_login=CURRENT_TIMESTAMP, updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(admin.id).run();
   const token = await createSession(db, admin.id);
   return json({ ok: true, token, admin: publicAdmin(admin) });
 }
 async function logout(request, env) {
-  const db = needDB(env);
+  const db = await ensureAuthSchema(env);
   const auth = request.headers.get('Authorization') || '';
   const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
   if (token) await db.prepare('DELETE FROM admin_sessions WHERE token=?').bind(token).run();
   return json({ ok: true });
 }
+
 async function getPublicProducts(env, url) {
   const db = needDB(env);
   const tab = url.searchParams.get('tab') || '';
@@ -114,7 +177,7 @@ async function getPublicProducts(env, url) {
   if (tab) stmt = db.prepare('SELECT * FROM products WHERE active=1 AND tab=? AND name LIKE ? ORDER BY name LIMIT 7000').bind(tab, q);
   else stmt = db.prepare('SELECT * FROM products WHERE active=1 AND name LIKE ? ORDER BY name LIMIT 7000').bind(q);
   const { results } = await stmt.all();
-  return json({ products: results.map(publicProduct) });
+  return json({ products: (results || []).map(publicProduct) });
 }
 function publicProduct(r) {
   return {
@@ -127,7 +190,7 @@ async function adminStats(env) {
   const db = needDB(env);
   const p = await db.prepare('SELECT COUNT(*) count FROM products').first();
   const i = await db.prepare("SELECT COUNT(*) count FROM products WHERE image_url IS NOT NULL AND image_url != ''").first();
-  return json({ products: p?.count || 0, withImages: i?.count || 0 });
+  return json({ products: Number(p?.count || 0), withImages: Number(i?.count || 0) });
 }
 async function adminProducts(env, url) {
   const db = needDB(env);
