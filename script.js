@@ -341,7 +341,7 @@ function bestSellerCard(product, group) {
     : placeholderHTML(product);
   return `
     <article class="best-seller-card">
-      <div class="best-seller-image"><img class="product-card-logo" src="assets/galaxy-logo.png" alt="" loading="lazy" />${image}</div>
+      <div class="best-seller-image">${image}</div>
       <div class="best-seller-body">
         <span>${safeText(group.label)}</span>
         <h3>${safeText(product.name)}</h3>
@@ -413,7 +413,7 @@ function productCard(product) {
   const upcLine = product.upc ? `<span>UPC: ${safeText(product.upc)}</span>` : '';
   return `
     <article class="product-card">
-      <div class="product-image"><img class="product-card-logo" src="assets/galaxy-logo.png" alt="" loading="lazy" />${image}</div>
+      <div class="product-image">${image}</div>
       <div class="product-body">
         <div class="product-topline">
           <h3>${safeText(product.name)}</h3>
