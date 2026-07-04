@@ -25,15 +25,44 @@
     </aside>
 
     <section class="workspace">
-      <section id="loginPanel" class="login-card">
+      <section id="authPanel" class="login-card">
         <p class="eyebrow">Secure Access</p>
         <h1>Galaxy Website Admin</h1>
-        <p>Manage product names, prices, images, website text, and imports from one portal.</p>
-        <label>Password
-          <input id="password" type="password" placeholder="Admin password" />
-        </label>
-        <button id="loginBtn" class="primary">Login</button>
+        <p class="muted-copy">Login with your admin email and password, or create the first admin account with the sign-up form.</p>
+
+        <div class="auth-tabs" role="tablist" aria-label="Admin access tabs">
+          <button id="loginTab" class="active" type="button">Login</button>
+          <button id="signupTab" type="button">Sign Up</button>
+        </div>
+
+        <form id="loginForm" class="auth-form active">
+          <label>Email / Username
+            <input id="loginEmail" type="email" autocomplete="username" placeholder="admin@example.com" required />
+          </label>
+          <label>Password
+            <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Admin password" required />
+          </label>
+          <button class="primary" type="submit">Login</button>
+        </form>
+
+        <form id="signupForm" class="auth-form">
+          <label>Email / Username
+            <input id="signupEmail" type="email" autocomplete="username" placeholder="admin@example.com" required />
+          </label>
+          <label>Password
+            <input id="signupPassword" type="password" autocomplete="new-password" placeholder="Create password" minlength="8" required />
+          </label>
+          <label>Confirm Password
+            <input id="signupConfirm" type="password" autocomplete="new-password" placeholder="Confirm password" minlength="8" required />
+          </label>
+          <label class="signup-code-row">Signup code <small>Required only after the first admin account is created.</small>
+            <input id="signupCode" type="text" autocomplete="off" placeholder="Optional setup/invite code" />
+          </label>
+          <button class="primary" type="submit">Create Admin Account</button>
+        </form>
+
         <p id="loginMessage" class="message"></p>
+        <p class="small-note">For safety, the first signup creates the owner account. Additional signups require the optional <strong>ADMIN_SIGNUP_CODE</strong> environment variable.</p>
       </section>
 
       <section id="appPanel" class="hidden">
@@ -41,6 +70,7 @@
           <div>
             <p class="eyebrow">Galaxy Smoke Shop</p>
             <h1 id="panelTitle">Dashboard</h1>
+            <p id="adminIdentity" class="admin-identity"></p>
           </div>
           <button id="refreshBtn" class="ghost">Refresh</button>
         </header>
@@ -87,7 +117,7 @@
               <label>Department<input id="editDepartment" /></label>
               <label>Category<input id="editCategory" /></label>
               <label>UPC<input id="editUpc" /></label>
-              <label>Image URL<input id="editImage" placeholder="https://... or /cdn/..." /></label>
+              <label>Image URL<input id="editImage" placeholder="https://... or /api/admin/images/object?..." /></label>
               <div class="form-actions"><button class="primary" type="submit">Save Product</button><button type="button" id="newProduct" class="ghost">New</button></div>
             </form>
           </div>
@@ -127,8 +157,8 @@
             <ol>
               <li>Create D1 database and R2 bucket in Cloudflare.</li>
               <li>Add the bindings to this Pages project.</li>
-              <li>Set ADMIN_PASSWORD and ADMIN_TOKEN environment variables.</li>
               <li>Run the SQL migration and seed products.</li>
+              <li>Create the first admin account from the Sign Up tab.</li>
               <li>Push the files to GitHub so Cloudflare redeploys.</li>
             </ol>
           </div>

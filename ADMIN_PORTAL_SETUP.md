@@ -1,100 +1,65 @@
 # Galaxy Smoke Shop Admin Portal Setup
 
-This package adds a customer-facing admin portal at:
+This package adds a customer-facing website plus `/admin/` admin portal for Cloudflare Pages.
 
-```text
-/admin/
-```
+## Login / Sign Up
 
-It is designed for Cloudflare Pages + Pages Functions + D1 + R2.
+The admin portal now uses normal email/password accounts.
 
-## 1. Create Cloudflare D1 database
+- Open `/admin/`
+- Click **Sign Up**
+- The first admin account becomes the owner account
+- After the first admin account exists, additional signups require a Cloudflare Pages environment variable named `ADMIN_SIGNUP_CODE`
 
-Cloudflare D1 is Cloudflare's managed serverless database with SQLite semantics and access from Workers/Pages Functions.
+This prevents random public visitors from creating admin accounts after your first setup.
 
-Suggested database name:
+## D1 setup commands
 
-```text
-galaxy-smoke-shop-db
-```
+Run these from the website folder:
 
-Run the schema:
-
-```bash
-npx wrangler d1 execute galaxy-smoke-shop-db --file=migrations/001_admin_schema.sql
-```
-
-Seed the current products from `products.js`:
-
-```bash
+```cmd
+cd /d C:\galaxy_smoke_shop_site
+npx -y wrangler@latest d1 execute galaxy-smoke-shop-db --remote --file=migrations/001_admin_schema.sql --yes
 node tools/make-d1-seed.mjs
-npx wrangler d1 execute galaxy-smoke-shop-db --file=migrations/002_seed_products.sql
+npx -y wrangler@latest d1 execute galaxy-smoke-shop-db --remote --file=migrations/002_seed_products.sql --yes
 ```
 
-## 2. Create Cloudflare R2 bucket
+If you already ran the old schema and only need to add the new login tables, run:
 
-Cloudflare R2 is object storage for images/files. Suggested bucket:
-
-```text
-galaxy-product-images
+```cmd
+npx -y wrangler@latest d1 execute galaxy-smoke-shop-db --remote --file=migrations/003_admin_users.sql --yes
 ```
 
-Bind it to the Pages project as:
+## Cloudflare Pages bindings
 
-```text
-PRODUCT_IMAGES
-```
+Add these under:
 
-## 3. Add Pages Function bindings
+`Workers & Pages -> galaxy-smoke-shop-website -> Settings -> Functions -> Bindings`
 
-In Cloudflare Dashboard:
+- D1 binding name: `DB`
+- D1 database: `galaxy-smoke-shop-db`
+- R2 binding name: `PRODUCT_IMAGES`
+- R2 bucket: `galaxy-product-images`
 
-```text
-Workers & Pages → galaxy-smoke-shop-website → Settings → Functions → Bindings
-```
+## Environment variables
 
-Add:
+Recommended:
 
-```text
-D1 binding name: DB
-R2 binding name: PRODUCT_IMAGES
-```
+- `ADMIN_SIGNUP_CODE` = a private code for adding future admins after the first admin exists
+- `R2_PUBLIC_BASE_URL` = optional public URL for your R2 product images
 
-## 4. Add admin secrets
+The old `ADMIN_PASSWORD` / `ADMIN_TOKEN` system is no longer required.
 
-In Cloudflare Pages project settings, add environment variables/secrets:
+## Deploy
 
-```text
-ADMIN_PASSWORD = your private admin password
-ADMIN_TOKEN = a long random secret string
-R2_PUBLIC_BASE_URL = your public R2 image base URL, optional
-```
+Copy the full contents of `galaxy_smoke_shop_site` into your GitHub project folder, then:
 
-## 5. Deploy
-
-```bash
+```cmd
+git status
 git add .
-git commit -m "Add Galaxy admin portal with D1 and R2 management"
+git commit -m "Add admin email signup and login"
 git pull --rebase origin main
 git push origin main
 ```
 
-## 6. Install as desktop app
-
-Open your site:
-
-```text
-https://yourdomain.com/admin/
-```
-
-In Microsoft Edge or Chrome, choose:
-
-```text
-Install this site as an app
-```
-
-The app opens like a desktop program but runs from your Cloudflare-hosted admin portal.
-
-## 7. Important
-
-The admin portal requires the D1 database and R2 bucket bindings before the Products and Image tools work.
+Cloudflare Pages will redeploy from GitHub.

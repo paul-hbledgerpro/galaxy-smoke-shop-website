@@ -1,4 +1,3 @@
-BEGIN TRANSACTION;
 INSERT OR REPLACE INTO products (id, tab, name, price, department, category, sub_category, pack, size, upc, image_url, active, updated_at) VALUES ('glass-00001','glass','$20 CHILLUMS',20,'AMERICAN GLASS','Uncategorized','','SINGLE','','6617000000','',1,CURRENT_TIMESTAMP);
 INSERT OR REPLACE INTO products (id, tab, name, price, department, category, sub_category, pack, size, upc, image_url, active, updated_at) VALUES ('glass-00002','glass','CHILLUMS MJ',25,'AMERICAN GLASS','Uncategorized','','SINGLE','','mj25ch','',1,CURRENT_TIMESTAMP);
 INSERT OR REPLACE INTO products (id, tab, name, price, department, category, sub_category, pack, size, upc, image_url, active, updated_at) VALUES ('glass-00003','glass','GRAVITY BONG TYSON 2.0',700,'AMERICAN GLASS','Uncategorized','','SINGLE','','811736026628','',1,CURRENT_TIMESTAMP);
@@ -6885,4 +6884,3 @@ INSERT OR REPLACE INTO products (id, tab, name, price, department, category, sub
 INSERT OR REPLACE INTO products (id, tab, name, price, department, category, sub_category, pack, size, upc, image_url, active, updated_at) VALUES ('vaporizers-06884','vaporizers','ZTCSMOKE Edge Cart Battery',20,'VAPORIZERS ZONE','VAPORIZERS','','SINGLE','','ztcsmokeedge','',1,CURRENT_TIMESTAMP);
 INSERT OR REPLACE INTO products (id, tab, name, price, department, category, sub_category, pack, size, upc, image_url, active, updated_at) VALUES ('vaporizers-06885','vaporizers','NAX Complete Kit',30,'VAPORIZERS ZONE','VAPORIZERS','','SINGLE','','naxcompletekit','',1,CURRENT_TIMESTAMP);
 INSERT OR REPLACE INTO products (id, tab, name, price, department, category, sub_category, pack, size, upc, image_url, active, updated_at) VALUES ('vaporizers-06886','vaporizers','Zeal Suite Vape',20,'VAPORIZERS ZONE','VAPORIZERS','','SINGLE','','zealsuite','',1,CURRENT_TIMESTAMP);
-COMMIT;

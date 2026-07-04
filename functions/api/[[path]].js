@@ -6,12 +6,17 @@ export async function onRequest(context) {
     if (request.method === 'OPTIONS') return cors(new Response(null, { status: 204 }));
     if (path === 'health') return json({ ok: true });
     if (path === 'public/products') return getPublicProducts(env, url);
+    if (path === 'admin/signup' && request.method === 'POST') return signup(request, env);
     if (path === 'admin/login' && request.method === 'POST') return login(request, env);
-    await requireAdmin(request, env);
+
+    const admin = await requireAdmin(request, env);
+    if (path === 'admin/me') return json({ admin: publicAdmin(admin) });
+    if (path === 'admin/logout' && request.method === 'POST') return logout(request, env);
     if (path === 'admin/stats') return adminStats(env);
     if (path === 'admin/products' && request.method === 'GET') return adminProducts(env, url);
     if (path === 'admin/products' && request.method === 'PUT') return saveProduct(request, env);
     if (path === 'admin/images/upload' && request.method === 'POST') return uploadImage(request, env);
+    if (path === 'admin/images/object' && request.method === 'GET') return getR2Object(env, url);
     if (path === 'admin/images/import-workdrive' && request.method === 'POST') return importWorkdrive(request, env);
     return json({ error: 'Not found' }, 404);
   } catch (err) {
@@ -28,17 +33,78 @@ function cors(res) {
 }
 function json(data, status = 200) { return cors(new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } })); }
 function needDB(env) { if (!env.DB) throw Object.assign(new Error('D1 binding DB is not configured.'), { status: 500 }); return env.DB; }
+function publicAdmin(a){ return { id: a.id, email: a.email, role: a.role || 'admin' }; }
+function normalizeEmail(email){ return String(email || '').trim().toLowerCase(); }
+function sqlDate(ms){ return new Date(ms).toISOString().replace('T',' ').slice(0,19); }
+function base64Url(bytes){ let bin=''; for (const b of bytes) bin += String.fromCharCode(b); return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+function randomToken(bytes=32){ const arr = new Uint8Array(bytes); crypto.getRandomValues(arr); return base64Url(arr); }
+async function passwordHash(password, salt){
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: enc.encode(salt), iterations: 120000, hash: 'SHA-256' }, key, 256);
+  return base64Url(new Uint8Array(bits));
+}
+function safeEqual(a,b){ a=String(a||''); b=String(b||''); if(a.length!==b.length) return false; let out=0; for(let i=0;i<a.length;i++) out |= a.charCodeAt(i)^b.charCodeAt(i); return out===0; }
+async function createSession(db, adminId){
+  const token = randomToken(40);
+  const expires = sqlDate(Date.now() + 1000 * 60 * 60 * 24 * 30);
+  await db.prepare('INSERT INTO admin_sessions (token, admin_id, expires_at, created_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)').bind(token, adminId, expires).run();
+  return token;
+}
 async function requireAdmin(request, env) {
+  const db = needDB(env);
   const auth = request.headers.get('Authorization') || '';
-  const expected = env.ADMIN_TOKEN;
-  if (!expected) throw Object.assign(new Error('ADMIN_TOKEN secret is not configured.'), { status: 500 });
-  if (auth !== `Bearer ${expected}`) throw Object.assign(new Error('Unauthorized'), { status: 401 });
+  const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
+  if (!token) throw Object.assign(new Error('Unauthorized'), { status: 401 });
+  const row = await db.prepare(`SELECT a.id, a.email, a.role, a.active, s.token
+    FROM admin_sessions s JOIN admins a ON a.id=s.admin_id
+    WHERE s.token=? AND s.expires_at > CURRENT_TIMESTAMP AND a.active=1`).bind(token).first();
+  if (!row) throw Object.assign(new Error('Unauthorized or session expired'), { status: 401 });
+  return row;
+}
+async function signup(request, env) {
+  const db = needDB(env);
+  const body = await request.json();
+  const email = normalizeEmail(body.email);
+  const password = String(body.password || '');
+  const signupCode = String(body.signupCode || '');
+  if (!email || !email.includes('@')) throw Object.assign(new Error('Valid email is required.'), { status: 400 });
+  if (password.length < 8) throw Object.assign(new Error('Password must be at least 8 characters.'), { status: 400 });
+  const existing = await db.prepare('SELECT COUNT(*) count FROM admins WHERE active=1').first();
+  const adminCount = Number(existing?.count || 0);
+  if (adminCount > 0) {
+    if (!env.ADMIN_SIGNUP_CODE) throw Object.assign(new Error('Admin signup is closed. Ask the owner to set ADMIN_SIGNUP_CODE or create this admin.'), { status: 403 });
+    if (!safeEqual(signupCode, env.ADMIN_SIGNUP_CODE)) throw Object.assign(new Error('Invalid signup code.'), { status: 403 });
+  }
+  const dupe = await db.prepare('SELECT id FROM admins WHERE email=?').bind(email).first();
+  if (dupe) throw Object.assign(new Error('An admin account with that email already exists.'), { status: 409 });
+  const id = crypto.randomUUID();
+  const salt = randomToken(18);
+  const hash = await passwordHash(password, salt);
+  const role = adminCount === 0 ? 'owner' : 'admin';
+  await db.prepare('INSERT INTO admins (id, email, password_hash, password_salt, role, active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)')
+    .bind(id, email, hash, salt, role).run();
+  const token = await createSession(db, id);
+  return json({ ok: true, token, admin: { id, email, role } });
 }
 async function login(request, env) {
-  const { password } = await request.json();
-  if (!env.ADMIN_PASSWORD || !env.ADMIN_TOKEN) throw Object.assign(new Error('ADMIN_PASSWORD or ADMIN_TOKEN secret is not configured.'), { status: 500 });
-  if (password !== env.ADMIN_PASSWORD) throw Object.assign(new Error('Invalid password'), { status: 401 });
-  return json({ token: env.ADMIN_TOKEN });
+  const db = needDB(env);
+  const { email, password } = await request.json();
+  const cleanEmail = normalizeEmail(email);
+  const admin = await db.prepare('SELECT * FROM admins WHERE email=? AND active=1').bind(cleanEmail).first();
+  if (!admin) throw Object.assign(new Error('Invalid email or password.'), { status: 401 });
+  const hash = await passwordHash(String(password || ''), admin.password_salt || '');
+  if (!safeEqual(hash, admin.password_hash)) throw Object.assign(new Error('Invalid email or password.'), { status: 401 });
+  await db.prepare('UPDATE admins SET last_login=CURRENT_TIMESTAMP, updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(admin.id).run();
+  const token = await createSession(db, admin.id);
+  return json({ ok: true, token, admin: publicAdmin(admin) });
+}
+async function logout(request, env) {
+  const db = needDB(env);
+  const auth = request.headers.get('Authorization') || '';
+  const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
+  if (token) await db.prepare('DELETE FROM admin_sessions WHERE token=?').bind(token).run();
+  return json({ ok: true });
 }
 async function getPublicProducts(env, url) {
   const db = needDB(env);
@@ -99,12 +165,24 @@ async function uploadImage(request, env) {
   await db.prepare('UPDATE products SET image_url=?, updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(imageUrl, productId).run();
   return json({ ok: true, key, imageUrl });
 }
+async function getR2Object(env, url) {
+  if (!env.PRODUCT_IMAGES) throw Object.assign(new Error('R2 binding PRODUCT_IMAGES is not configured.'), { status: 500 });
+  const key = url.searchParams.get('key');
+  if (!key) throw Object.assign(new Error('key is required.'), { status: 400 });
+  const obj = await env.PRODUCT_IMAGES.get(key);
+  if (!obj) return new Response('Not found', { status: 404 });
+  const headers = new Headers();
+  obj.writeHttpMetadata(headers);
+  headers.set('etag', obj.httpEtag);
+  headers.set('Cache-Control', 'public, max-age=31536000');
+  return cors(new Response(obj.body, { headers }));
+}
 async function importWorkdrive(request, env) {
   const db = needDB(env);
   const { url, keyword } = await request.json();
   if (!url) throw Object.assign(new Error('WorkDrive URL is required.'), { status: 400 });
   const html = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 GalaxySmokeShopImporter' } }).then(r => r.text());
-  const candidates = [...new Set([...html.matchAll(/https?:\\?\/\\?\/[^"'<> ]+?\.(?:png|jpe?g|webp)(?:\?[^"'<> ]*)?/gi)].map(m => m[0].replace(/\\\//g, '/')))];
+  const candidates = [...new Set([...html.matchAll(/https?:\\?\/\\?\/[^"'<> ]+?\.(?:png|jpe?g|webp)(?:\?[^"'<> ]*)?/gi)].map(m => m[0].replace(/\\\//g, '/')))].slice(0, 2000);
   let matched = 0;
   for (const imageUrl of candidates) {
     const nameGuess = decodeURIComponent(imageUrl.split('/').pop().split('?')[0]).replace(/[-_]+/g, ' ').replace(/\.(png|jpe?g|webp)$/i, '');
